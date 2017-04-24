@@ -1,9 +1,12 @@
+const configFile = process.env.NODE_ENV === 'dev' ? './dev' : 'production'
+const config = require(configFile)
+
 module.exports = {
-  port: 3000,
+  port: config.port,
   session: {
-    secret: 'myblog',
+    secret: config.secret,
     key: 'myblog',
     maxAge: 2592000000
   },
-  mongodb: 'mongodb://localhost:27017/myblog'
+  mongodb: config.mongodb
 };

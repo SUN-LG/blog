@@ -9,6 +9,8 @@ const config = require('config-lite')(__dirname)
 const routes = require('./routes')
 const pkg = require('./package.json')
 
+const port = process.env.PORT || config.port
+
 const app = express()
 
 app.set('views', path.join(__dirname, 'views'))
@@ -74,6 +76,10 @@ app.use(function (err, req, res, next) {
   res.status(500).render('error', {error: err})
 })
 
-app.listen(config.port, function () {
-  console.log(`${pkg.name} listening on port ${config.port}`)
-})
+if (module.parent) {
+  module.exports = app
+} else {
+  app.listen(port, function () {
+    console.log(`${pkg.name} listening on port ${port}`)
+  })
+}
