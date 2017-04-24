@@ -3,6 +3,8 @@ const express = require('express')
 const session = require('express-session')
 const MongoStore = require('connect-mongo')(session)
 const flash = require('connect-flash')
+const winston = require('winston')
+const expressWinston = require('express-winston')
 const config = require('config-lite')(__dirname)
 const routes = require('./routes')
 const pkg = require('./package.json')
@@ -42,7 +44,31 @@ app.use(function (req, res, next) {
   next()
 })
 
+app.use(expressWinston.logger({
+  transports: [
+    new winston.transports.Console({
+      json: true,
+      colorize: true
+    }),
+    new winston.transports.File({
+      filename: 'logs/success.log'
+    })
+  ]
+}))
+
 routes(app)
+
+app.use(expressWinston.errorLogger({
+  transports: [
+    new winston.transports.Console({
+      json: true,
+      colorize: true
+    }),
+    new winston.transports.File({
+      filename: 'logs/error.log'
+    })
+  ]
+}))
 
 app.use(function (err, req, res, next) {
   res.status(500).render('error', {error: err})
